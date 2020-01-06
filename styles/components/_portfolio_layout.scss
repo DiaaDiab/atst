@@ -126,14 +126,8 @@
       margin: 4rem;
     }
 
-    .env_role {
-      &--th {
-        width: 50%;
-      }
-
-      &--td {
-        position: relative;
-      }
+    .env_role--th {
+      width: 50%;
     }
 
     .row {
@@ -155,7 +149,10 @@
       }
     }
 
-    .app-member-menu {
+    .member-menu--td {
+      position: relative;
+    }
+    .member-menu {
       position: absolute;
       top: $gap;
       right: $gap * 2;

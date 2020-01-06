@@ -41,12 +41,14 @@ def filter_perm_sets_data(member):
 def filter_members_data(members_list):
     members_data = []
     for member in members_list:
+        perms = filter_perm_sets_data(member)
         members_data.append(
             {
                 "role_id": member.id,
                 "user_name": member.user_name,
                 "permission_sets": filter_perm_sets_data(member),
-                # add in stuff here for forms
+                "role_status": member.display_status,
+                "form": member_forms.PermissionsForm(perms),
             }
         )
 
@@ -71,6 +73,7 @@ def render_admin_page(portfolio, form=None):
     )
     current_member_id = current_member.id if current_member else None
 
+    # TODO: clean up args here
     return render_template(
         "portfolios/admin.html",
         form=form,
@@ -94,32 +97,33 @@ def admin(portfolio_id):
     return render_admin_page(portfolio)
 
 
-@portfolios_bp.route("/portfolios/<portfolio_id>/admin", methods=["POST"])
-@user_can(Permissions.EDIT_PORTFOLIO_USERS, message="view portfolio admin page")
-def edit_members(portfolio_id):
-    portfolio = Portfolios.get_for_update(portfolio_id)
-    member_perms_form = member_forms.MembersPermissionsForm(http_request.form)
-
-    if member_perms_form.validate():
-        for subform in member_perms_form.members_permissions:
-            member_id = subform.member_id.data
-            member = PortfolioRoles.get_by_id(member_id)
-            if member is not portfolio.owner_role:
-                new_perm_set = subform.data["permission_sets"]
-                PortfolioRoles.update(member, new_perm_set)
-
-        flash("update_portfolio_members", portfolio=portfolio)
-
-        return redirect(
-            url_for(
-                "portfolios.admin",
-                portfolio_id=portfolio_id,
-                fragment="portfolio-members",
-                _anchor="portfolio-members",
-            )
-        )
-    else:
-        return render_admin_page(portfolio)
+# TODO: reimplement this route to only update one member at a time
+# @portfolios_bp.route("/portfolios/<portfolio_id>/admin", methods=["POST"])
+# @user_can(Permissions.EDIT_PORTFOLIO_USERS, message="view portfolio admin page")
+# def edit_members(portfolio_id):
+#     portfolio = Portfolios.get_for_update(portfolio_id)
+#     member_perms_form = member_forms.MembersPermissionsForm(http_request.form)
+#
+#     if member_perms_form.validate():
+#         for subform in member_perms_form.members_permissions:
+#             member_id = subform.member_id.data
+#             member = PortfolioRoles.get_by_id(member_id)
+#             if member is not portfolio.owner_role:
+#                 new_perm_set = subform.data["permission_sets"]
+#                 PortfolioRoles.update(member, new_perm_set)
+#
+#         flash("update_portfolio_members", portfolio=portfolio)
+#
+#         return redirect(
+#             url_for(
+#                 "portfolios.admin",
+#                 portfolio_id=portfolio_id,
+#                 fragment="portfolio-members",
+#                 _anchor="portfolio-members",
+#             )
+#         )
+#     else:
+#         return render_admin_page(portfolio)
 
 
 @portfolios_bp.route("/portfolios/<portfolio_id>/update_ppoc", methods=["POST"])

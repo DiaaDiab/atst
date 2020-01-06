@@ -119,7 +119,7 @@
                     </div>
                   {% endfor %}
                 </td>
-                <td class="env_role--td">
+                <td class="member-menu--td">
                   {% for env in member.environment_roles %}
                     <div class="row">
                       <span class="env-role__environment">
@@ -132,7 +132,7 @@
                   {% endfor %}
                   {% if user_can(permissions.EDIT_APPLICATION_MEMBER) -%}
                     <toggle-menu inline-template v-cloak>
-                      <div class="app-member-menu">
+                      <div class="member-menu">
                         <span v-if="isVisible" class="accordion-table__item__toggler accordion-table__item__toggler--active">
                           {{ Icon('ellipsis')}}
                         </span>
@@ -140,7 +140,7 @@
                           {{ Icon('ellipsis')}}
                         </span>
 
-                        <div v-show="isVisible" class="accordion-table__item-toggle-content app-member-menu__toggle">
+                        <div v-show="isVisible" class="accordion-table__item-toggle-content member-menu__toggle">
                           <a v-on:click="openModal('{{ perms_modal }}')">
                             {{ "portfolios.applications.members.menu.edit" | translate }}
                           </a>
@@ -172,6 +172,7 @@
       {{ "portfolios.applications.add_member" | translate }}
     </a>
 
+    <!-- fix submit step to use generalized step here -->
     {{ MultiStepModalForm(
         name=new_member_modal_name,
         form=new_member_form,
